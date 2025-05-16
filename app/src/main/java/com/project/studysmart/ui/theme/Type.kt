@@ -14,7 +14,7 @@ val provider = GoogleFont.Provider(
 
 val bodyFontFamily = FontFamily(
     Font(
-        googleFont = GoogleFont("Inter Tight"),
+        googleFont = GoogleFont("Playwrite Danmark Loopet"),
         fontProvider = provider,
     )
 )
