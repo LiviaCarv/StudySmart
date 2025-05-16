@@ -1,11 +1,14 @@
 package com.project.studysmart.ui.screens.dashboard
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -16,7 +19,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.project.studysmart.domain.model.Subject
+import com.project.studysmart.ui.components.AddSubjectsCard
 import com.project.studysmart.ui.components.CountCard
+import com.project.studysmart.ui.components.SectionTitle
 import com.project.studysmart.ui.theme.StudySmartTheme
 
 @Composable
@@ -31,10 +37,16 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
         ) {
             item {
                 CountCardsSection(
-                    modifier = Modifier.fillMaxWidth().padding(12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
                     subjectCount = 5,
                     goalHours = "5",
-                    studiedHours = "5")
+                    studiedHours = "5"
+                )
+            }
+            item {
+                SubjectCardsSection(subjectList = listOf())
             }
         }
     }
@@ -55,7 +67,7 @@ fun DashboardScreenTopBar() {
 }
 
 @Composable
-fun CountCardsSection(
+private fun CountCardsSection(
     subjectCount: Int,
     studiedHours: String,
     goalHours: String,
@@ -84,11 +96,27 @@ fun CountCardsSection(
     }
 }
 
+@Composable
+private fun SubjectCardsSection(
+    modifier: Modifier = Modifier,
+    subjectList: List<Subject>
+) {
+    Column(modifier) {
+        SectionTitle(Modifier.padding(12.dp), "SUBJECTS", Icons.Default.Add, {})
+        if (subjectList.isEmpty()) {
+            AddSubjectsCard()
+        } else {
+
+        }
+    }
+
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun CountCardsSectionPrev() {
     StudySmartTheme {
-        CountCardsSection(3,"10","12")
+        CountCardsSection(3, "10", "12")
     }
 }
 
