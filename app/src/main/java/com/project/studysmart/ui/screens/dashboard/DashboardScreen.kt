@@ -26,6 +26,7 @@ import com.project.studysmart.ui.components.EmptyCardsContent
 import com.project.studysmart.ui.components.LongButton
 import com.project.studysmart.ui.components.Section
 import com.project.studysmart.ui.components.SubjectCard
+import com.project.studysmart.ui.components.TaskCard
 import com.project.studysmart.ui.theme.StudySmartTheme
 import com.project.studysmart.ui.theme.gradient1
 import com.project.studysmart.ui.theme.gradient5
@@ -39,6 +40,12 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
         Subject("Portuguese", 7.0f, gradient5),
         Subject("Geo", 5.0f, gradient1),
         Subject("Physics", 3f, gradient1)
+    )
+
+    val taskList = listOf(
+        Task("Prepare notes", "need to study", 4L, 2, "", false),
+        Task("Watch next lesson", "need to study", 4L, 2, "", false),
+        Task("Study 2 hrs", "need to study", 4L, 2, "", false)
     )
 
     Scaffold(
@@ -70,7 +77,7 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
                 )
             }
             item {
-                UpcomingTasksSection(tasksList = emptyList())
+                UpcomingTasksSection(tasksList = taskList, onCheckBoxClick = {})
             }
         }
     }
@@ -152,7 +159,8 @@ private fun SubjectCardsSection(
 @Composable
 fun UpcomingTasksSection(
     modifier: Modifier = Modifier,
-    tasksList: List<Task>
+    tasksList: List<Task>,
+    onCheckBoxClick: () -> Unit
 ) {
     Section(
         modifier = modifier,
@@ -168,7 +176,7 @@ fun UpcomingTasksSection(
             )
         },
         itemContent = { task, onClick ->
-
+            TaskCard(task = task, onClick = onClick, onCheckBoxClick = { onCheckBoxClick() })
         },
         onIconClick = {}
     )

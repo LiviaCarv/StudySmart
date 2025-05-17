@@ -22,7 +22,7 @@ fun <T> Section(
     itemContent: @Composable (T, () -> Unit) -> Unit,
     emptyListContent: @Composable () -> Unit,
     onItemClick: () -> Unit,
-    onIconClick: () -> Unit
+    onIconClick: () -> Unit,
 ) {
     Column(modifier) {
         SectionTitle(
