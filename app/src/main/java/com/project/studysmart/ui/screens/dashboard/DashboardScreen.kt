@@ -2,11 +2,14 @@ package com.project.studysmart.ui.screens.dashboard
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -23,10 +26,22 @@ import com.project.studysmart.domain.model.Subject
 import com.project.studysmart.ui.components.AddSubjectsCard
 import com.project.studysmart.ui.components.CountCard
 import com.project.studysmart.ui.components.SectionTitle
+import com.project.studysmart.ui.components.SubjectCard
 import com.project.studysmart.ui.theme.StudySmartTheme
+import com.project.studysmart.ui.theme.gradient1
+import com.project.studysmart.ui.theme.gradient5
+
 
 @Composable
 fun DashboardScreen(modifier: Modifier = Modifier) {
+
+    val subjectList = listOf(
+        Subject("Math", 3f, gradient1),
+        Subject("Portuguese", 7.0f, gradient5),
+        Subject("Geo", 5.0f, gradient1),
+        Subject("Physics", 3f, gradient1)
+    )
+
     Scaffold(
         topBar = { DashboardScreenTopBar() }
     ) { paddingValues ->
@@ -46,7 +61,7 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
                 )
             }
             item {
-                SubjectCardsSection(subjectList = listOf())
+                SubjectCardsSection(subjectList = subjectList)
             }
         }
     }
@@ -102,11 +117,23 @@ private fun SubjectCardsSection(
     subjectList: List<Subject>
 ) {
     Column(modifier) {
-        SectionTitle(Modifier.padding(12.dp), "SUBJECTS", Icons.Default.Add, {})
+        SectionTitle(
+            Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            "SUBJECTS",
+            Icons.Default.Add,
+            {})
         if (subjectList.isEmpty()) {
             AddSubjectsCard()
         } else {
-
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(subjectList)
+                { subject ->
+                    SubjectCard(subject = subject, onClick = {})
+                }
+            }
         }
     }
 
