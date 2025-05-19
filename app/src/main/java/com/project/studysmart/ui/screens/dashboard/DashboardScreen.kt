@@ -1,11 +1,15 @@
 package com.project.studysmart.ui.screens.dashboard
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -24,7 +28,7 @@ import com.project.studysmart.domain.model.Task
 import com.project.studysmart.ui.components.CountCard
 import com.project.studysmart.ui.components.EmptyCardsContent
 import com.project.studysmart.ui.components.LongButton
-import com.project.studysmart.ui.components.Section
+import com.project.studysmart.ui.components.SectionTitle
 import com.project.studysmart.ui.components.SubjectCard
 import com.project.studysmart.ui.components.TaskCard
 import com.project.studysmart.ui.theme.StudySmartTheme
@@ -36,16 +40,16 @@ import com.project.studysmart.ui.theme.gradient5
 fun DashboardScreen(modifier: Modifier = Modifier) {
 
     val subjectList = listOf(
-        Subject("Math", 3f, gradient1),
-        Subject("Portuguese", 7.0f, gradient5),
-        Subject("Geo", 5.0f, gradient1),
-        Subject("Physics", 3f, gradient1)
+        Subject(1, "Math", 3f, gradient1),
+        Subject(2, "Portuguese", 7.0f, gradient5),
+        Subject(3,"Geo", 5.0f, gradient1),
+        Subject(4, "Physics", 3f, gradient1)
     )
 
     val taskList = listOf(
-        Task("Prepare notes", "need to study", 4L, 2, "", false),
-        Task("Watch next lesson", "need to study", 4L, 2, "", false),
-        Task("Study 2 hrs", "need to study", 4L, 2, "", false)
+        Task(1,2,"Prepare notes", "need to study", 4L, 2, "", true),
+        Task(1,2,"Watch next lesson", "need to study", 4L, 2, "", false),
+        Task(1,2,"Study 2 hrs", "need to study", 4L, 2, "", false)
     )
 
     Scaffold(
@@ -77,7 +81,7 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
                 )
             }
             item {
-                UpcomingTasksSection(tasksList = taskList, onCheckBoxClick = {})
+                UpcomingTasksSection(taskList = taskList, onCheckBoxClick = {}, onTaskClick = {})
             }
         }
     }
@@ -132,55 +136,66 @@ private fun SubjectCardsSection(
     modifier: Modifier = Modifier,
     subjectList: List<Subject>
 ) {
-    Section(
-        modifier = modifier,
-        sectionTitle = "SUBJECTS",
-        itemsList = subjectList,
-        icon = Icons.Default.Add,
-        onItemClick = { },
-        emptyListContent = {
+    Column(modifier) {
+        SectionTitle(
+            Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            "SUBJECTS",
+            Icons.Default.Add,
+            {})
+        if (subjectList.isEmpty()) {
             EmptyCardsContent(
                 imageRes = R.drawable.img_books,
                 emptyListText1 = "You don't have any subjects.",
                 emptyListText2 = "Click the + button to add new subject."
             )
-        },
-        itemContent = { subject, onClick ->
-            SubjectCard(
-                subject = subject,
-                onClick = onClick
-            )
-        },
-        onIconClick = {}
-    )
-
+        } else {
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(subjectList)
+                { subject ->
+                    SubjectCard(subject = subject, onClick = {})
+                }
+            }
+        }
+    }
 }
 
 @Composable
 fun UpcomingTasksSection(
     modifier: Modifier = Modifier,
-    tasksList: List<Task>,
-    onCheckBoxClick: () -> Unit
+    taskList: List<Task>,
+    onCheckBoxClick: (task: Task) -> Unit,
+    onTaskClick: (task: Task) -> Unit
 ) {
-    Section(
-        modifier = modifier,
-        sectionTitle = "UPCOMING TASKS",
-        itemsList = tasksList,
-        icon = null,
-        onItemClick = { },
-        emptyListContent = {
+    Column(modifier) {
+        SectionTitle(
+            Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            "UPCOMING TASKS",
+            null,
+            {})
+        if (taskList.isEmpty()) {
             EmptyCardsContent(
                 imageRes = R.drawable.img_lamp,
                 emptyListText1 = "You don't have any upcoming tasks.",
                 emptyListText2 = "Click the + button in Subject Screen to add new task."
             )
-        },
-        itemContent = { task, onClick ->
-            TaskCard(task = task, onClick = onClick, onCheckBoxClick = { onCheckBoxClick() })
-        },
-        onIconClick = {}
-    )
-
+        } else {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+            ) {
+                taskList.forEach { task ->
+                    TaskCard(
+                        task = task,
+                        onClick = { onTaskClick(task) },
+                        onCheckBoxClick = { onCheckBoxClick(task) }
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Preview(showBackground = true)
