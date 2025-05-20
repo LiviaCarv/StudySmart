@@ -12,25 +12,25 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.project.studysmart.domain.model.Task
 import com.project.studysmart.ui.theme.StudySmartTheme
+import com.project.studysmart.util.Priority
 
 @Composable
 fun TaskCard(
     modifier: Modifier = Modifier,
     task: Task,
-    onClick: () -> Unit,
+    onTaskClick: () -> Unit,
     onCheckBoxClick: () -> Unit
 ) {
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .clickable { onTaskClick() }
     ) {
         Row(
             modifier = Modifier
@@ -39,7 +39,10 @@ fun TaskCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            TaskCheckBox(task.isComplete, Color.Black) { onCheckBoxClick() }
+            TaskCheckBox(
+                task.isComplete,
+                Priority.fromInt(task.priority).color
+            ) { onCheckBoxClick() }
             Column(
                 modifier = Modifier,
             ) {
@@ -68,8 +71,8 @@ fun TaskCard(
 private fun TaskCardPrev() {
     StudySmartTheme {
         TaskCard(
-            task = Task("need to do", "", 4L, 3, "mat", true),
-            onClick = { },
+            task = Task(1, 2, "need to do", "", 4L, 3, "mat", true),
+            onTaskClick = { },
             onCheckBoxClick = {}
         )
     }

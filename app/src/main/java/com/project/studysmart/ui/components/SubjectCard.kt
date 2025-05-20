@@ -68,7 +68,7 @@ fun SubjectCard(
 private fun SubjectCardPrev() {
     StudySmartTheme {
         SubjectCard(
-            subject = Subject("kkkkkkkkkkkkkkk", 15.6f, listOf(Color.Red, Blue)),
+            subject = Subject(1,"kkkkkkkkkkkkkkk", 15.6f, listOf(Color.Red, Blue)),
             onClick = {})
     }
 }
