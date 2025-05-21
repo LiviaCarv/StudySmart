@@ -20,17 +20,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.project.studysmart.R
+import com.project.studysmart.domain.model.Session
 import com.project.studysmart.domain.model.Subject
 import com.project.studysmart.domain.model.Task
 import com.project.studysmart.ui.components.CountCard
 import com.project.studysmart.ui.components.EmptyCardsContent
 import com.project.studysmart.ui.components.LongButton
 import com.project.studysmart.ui.components.SectionTitle
+import com.project.studysmart.ui.components.StudySessionsSection
 import com.project.studysmart.ui.components.SubjectCard
-import com.project.studysmart.ui.components.TaskCard
+import com.project.studysmart.ui.components.UpcomingTasksSection
 import com.project.studysmart.ui.theme.StudySmartTheme
 import com.project.studysmart.ui.theme.gradient1
 import com.project.studysmart.ui.theme.gradient5
@@ -42,15 +45,17 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
     val subjectList = listOf(
         Subject(1, "Math", 3f, gradient1),
         Subject(2, "Portuguese", 7.0f, gradient5),
-        Subject(3,"Geo", 5.0f, gradient1),
+        Subject(3, "Geo", 5.0f, gradient1),
         Subject(4, "Physics", 3f, gradient1)
     )
 
     val taskList = listOf(
-        Task(1,2,"Prepare notes", "need to study", 4L, 2, "", true),
-        Task(1,2,"Watch next lesson", "need to study", 4L, 2, "", false),
-        Task(1,2,"Study 2 hrs", "need to study", 4L, 2, "", false)
+        Task(1, 2, "Prepare notes", "need to study", 4L, 0, "", true),
+        Task(1, 2, "Watch next lesson", "need to study", 4L, 1, "", false),
+        Task(1, 2, "Study 2 hrs", "need to study", 4L, 2, "", false)
     )
+
+    val sessionList = emptyList<Session>()
 
     Scaffold(
         topBar = { DashboardScreenTopBar() }
@@ -75,7 +80,7 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
             }
             item {
                 LongButton(
-                    text = "Start Study Session.",
+                    text = stringResource(R.string.start_study_session),
                     onClick = {},
                     modifier = modifier.padding(vertical = 20.dp, horizontal = 48.dp)
                 )
@@ -94,7 +99,7 @@ fun DashboardScreenTopBar() {
     CenterAlignedTopAppBar(
         title = {
             Text(
-                text = "StudySmart",
+                text = stringResource(R.string.app_name),
                 style = MaterialTheme.typography.headlineMedium
             )
         }
@@ -114,17 +119,17 @@ private fun CountCardsSection(
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         CountCard(
-            headingText = "Subject Count",
+            headingText = stringResource(R.string.subject_count),
             count = "$subjectCount",
             modifier = Modifier.weight(1f)
         )
         CountCard(
-            headingText = "Studied Hours",
+            headingText = stringResource(R.string.studied_hours),
             count = studiedHours,
             modifier = Modifier.weight(1f)
         )
         CountCard(
-            headingText = "Goal Study Hours",
+            headingText = stringResource(R.string.goal_study_hours),
             count = goalHours,
             modifier = Modifier.weight(1f)
         )
@@ -139,14 +144,14 @@ private fun SubjectCardsSection(
     Column(modifier) {
         SectionTitle(
             Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-            "SUBJECTS",
+            stringResource(R.string.subject_section_title),
             Icons.Default.Add,
             {})
         if (subjectList.isEmpty()) {
             EmptyCardsContent(
                 imageRes = R.drawable.img_books,
-                emptyListText1 = "You don't have any subjects.",
-                emptyListText2 = "Click the + button to add new subject."
+                emptyListText1 = stringResource(R.string.no_subjects),
+                emptyListText2 = stringResource(R.string.add_subject)
             )
         } else {
             LazyRow(
@@ -162,41 +167,6 @@ private fun SubjectCardsSection(
     }
 }
 
-@Composable
-fun UpcomingTasksSection(
-    modifier: Modifier = Modifier,
-    taskList: List<Task>,
-    onCheckBoxClick: (task: Task) -> Unit,
-    onTaskClick: (task: Task) -> Unit
-) {
-    Column(modifier) {
-        SectionTitle(
-            Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-            "UPCOMING TASKS",
-            null,
-            {})
-        if (taskList.isEmpty()) {
-            EmptyCardsContent(
-                imageRes = R.drawable.img_lamp,
-                emptyListText1 = "You don't have any upcoming tasks.",
-                emptyListText2 = "Click the + button in Subject Screen to add new task."
-            )
-        } else {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(6.dp),
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
-            ) {
-                taskList.forEach { task ->
-                    TaskCard(
-                        task = task,
-                        onClick = { onTaskClick(task) },
-                        onCheckBoxClick = { onCheckBoxClick(task) }
-                    )
-                }
-            }
-        }
-    }
-}
 
 @Preview(showBackground = true)
 @Composable

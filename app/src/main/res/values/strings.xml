@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">StudySmart</string>
+    <string name="no_subjects">You don\'t have any subjects.</string>
+    <string name="add_subject">Click the + button to add new subject.</string>
+    <string name="subject_section_title">SUBJECTS</string>
+    <string name="subject_count">Subject Count</string>
+    <string name="studied_hours">Studied Hours</string>
+    <string name="goal_study_hours">Goal Study Hours</string>
+    <string name="start_study_session">Start Study Session.</string>
+    <string name="no_tasks">You don\'t have any upcoming tasks.</string>
+    <string name="add_tasks">Click the + button in Subject Screen to add new task.</string>
+    <string name="upcoming_tasks_section_title">UPCOMING TASKS</string>
+    <string name="no_study_sessions">You don\'t have any recent study sessions.</string>
+    <string name="add_study_sessions">Start a study session to begin recording your progress.</string>
+    <string name="delete_study_session">Delete study session</string>
 </resources>
