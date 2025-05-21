@@ -55,7 +55,12 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
         Task(1, 2, "Study 2 hrs", "need to study", 4L, 2, "", false)
     )
 
-    val sessionList = emptyList<Session>()
+    val sessionList = listOf(
+        Session(sessionSubjectId = 1, relatedToSubject = "English",1234L, 2L, 0),
+        Session(sessionSubjectId = 2, relatedToSubject = "Portuguese",1234L, 2L, 1),
+        Session(sessionSubjectId = 3, relatedToSubject = "Maths",1234L, 2L, 2),
+        Session(sessionSubjectId = 4, relatedToSubject = "Physics",1234L, 2L, 3),
+    )
 
     Scaffold(
         topBar = { DashboardScreenTopBar() }
@@ -87,6 +92,13 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
             }
             item {
                 UpcomingTasksSection(taskList = taskList, onCheckBoxClick = {}, onTaskClick = {})
+            }
+            item {
+                StudySessionsSection(
+                    modifier = Modifier.padding(vertical = 20.dp),
+                    sessionsList = sessionList,
+                    onDeleteIconClick = {}
+                )
             }
         }
     }
