@@ -18,6 +18,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -27,6 +31,7 @@ import com.project.studysmart.R
 import com.project.studysmart.domain.model.Session
 import com.project.studysmart.domain.model.Subject
 import com.project.studysmart.domain.model.Task
+import com.project.studysmart.ui.components.AddSubjectDialog
 import com.project.studysmart.ui.components.CountCard
 import com.project.studysmart.ui.components.EmptyCardsContent
 import com.project.studysmart.ui.components.LongButton
@@ -56,10 +61,22 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
     )
 
     val sessionList = listOf(
-        Session(sessionSubjectId = 1, relatedToSubject = "English",1234L, 2L, 0),
-        Session(sessionSubjectId = 2, relatedToSubject = "Portuguese",1234L, 2L, 1),
-        Session(sessionSubjectId = 3, relatedToSubject = "Maths",1234L, 2L, 2),
-        Session(sessionSubjectId = 4, relatedToSubject = "Physics",1234L, 2L, 3),
+        Session(sessionSubjectId = 1, relatedToSubject = "English", 1234L, 2L, 0),
+        Session(sessionSubjectId = 2, relatedToSubject = "Portuguese", 1234L, 2L, 1),
+        Session(sessionSubjectId = 3, relatedToSubject = "Maths", 1234L, 2L, 2),
+        Session(sessionSubjectId = 4, relatedToSubject = "Physics", 1234L, 2L, 3),
+    )
+
+    var isAddSubjectDialogOpen by rememberSaveable { mutableStateOf(false) }
+    
+    AddSubjectDialog(
+        showDialog = isAddSubjectDialogOpen,
+        onDismissRequest = {
+            isAddSubjectDialogOpen = false
+        },
+        onConfirmation = {
+            isAddSubjectDialogOpen = false
+        },
     )
 
     Scaffold(
@@ -81,7 +98,10 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
                 )
             }
             item {
-                SubjectCardsSection(subjectList = subjectList)
+                SubjectCardsSection(
+                    subjectList = subjectList,
+                    onAddIconClick = {isAddSubjectDialogOpen = true}
+                    )
             }
             item {
                 LongButton(
@@ -151,14 +171,16 @@ private fun CountCardsSection(
 @Composable
 private fun SubjectCardsSection(
     modifier: Modifier = Modifier,
-    subjectList: List<Subject>
+    subjectList: List<Subject>,
+    onAddIconClick: () -> Unit
 ) {
     Column(modifier) {
         SectionTitle(
             Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
             stringResource(R.string.subject_section_title),
             Icons.Default.Add,
-            {})
+            { onAddIconClick() }
+        )
         if (subjectList.isEmpty()) {
             EmptyCardsContent(
                 imageRes = R.drawable.img_books,
