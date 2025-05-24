@@ -24,6 +24,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -68,7 +69,10 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
     )
 
     var isAddSubjectDialogOpen by rememberSaveable { mutableStateOf(false) }
-    
+    var subjectName by rememberSaveable { mutableStateOf("") }
+    var goalHours by rememberSaveable { mutableStateOf("") }
+    var selectedColor by rememberSaveable { mutableStateOf(emptyList<Color>()) }
+
     AddSubjectDialog(
         showDialog = isAddSubjectDialogOpen,
         onDismissRequest = {
@@ -77,6 +81,12 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
         onConfirmation = {
             isAddSubjectDialogOpen = false
         },
+        selectedColor = selectedColor,
+        onColorChange = {selectedColor = it},
+        subject = subjectName,
+        goalStudyHours = goalHours,
+        onSubjectNameChange = {subjectName = it},
+        onGoalStudyHoursChange = {goalHours = it},
     )
 
     Scaffold(
