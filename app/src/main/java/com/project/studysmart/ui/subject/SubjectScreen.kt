@@ -10,13 +10,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -24,17 +27,28 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.project.studysmart.R
+import com.project.studysmart.domain.model.Session
 import com.project.studysmart.domain.model.Task
+import com.project.studysmart.ui.components.AddSubjectDialog
 import com.project.studysmart.ui.components.CountCard
-import com.project.studysmart.ui.components.UpcomingTasksSection
+import com.project.studysmart.ui.components.DeleteDialog
+import com.project.studysmart.ui.components.StudySessionsSection
+import com.project.studysmart.ui.components.TasksSection
 import com.project.studysmart.ui.theme.StudySmartTheme
 import kotlin.math.roundToInt
 
@@ -45,27 +59,100 @@ fun SubjectScreen(modifier: Modifier = Modifier) {
         Task(1, 2, "Watch next lesson", "need to study", 4L, 1, "", false),
         Task(1, 2, "Study 2 hrs", "need to study", 4L, 2, "", false)
     )
+    val sessionList = listOf(
+        Session(sessionSubjectId = 1, relatedToSubject = "English", 1234L, 2L, 0),
+        Session(sessionSubjectId = 2, relatedToSubject = "Portuguese", 1234L, 2L, 1),
+        Session(sessionSubjectId = 3, relatedToSubject = "Maths", 1234L, 2L, 2),
+        Session(sessionSubjectId = 4, relatedToSubject = "Physics", 1234L, 2L, 3),
+    )
 
-    val studiedHours = "2.3"
-    val goalHours = "10.0"
-    val progress = studiedHours.toFloat() / goalHours.toFloat()
+
+//    val progress = studiedHours.toFloat() / goalHours.toFloat()
+
+    val listState = rememberLazyListState()
+    val isFabExpanded by remember {
+        derivedStateOf { listState.firstVisibleItemIndex == 0 }
+    }
+
+    var isAddSubjectDialogOpen by rememberSaveable { mutableStateOf(false) }
+    var isDeleteSessionDialogOpen by rememberSaveable { mutableStateOf(false) }
+    var isDeleteSubjectDialogOpen by rememberSaveable { mutableStateOf(false) }
+    var subjectName by rememberSaveable { mutableStateOf("") }
+    var studiedHours by rememberSaveable { mutableStateOf("4") }
+    var goalHours by rememberSaveable { mutableStateOf("10") }
+    val progress by remember {
+        derivedStateOf {
+            (studiedHours.toFloat() / goalHours.toFloat()).coerceIn(0f, 1f)
+        }
+    }
+    var selectedColor by rememberSaveable { mutableStateOf(emptyList<Color>()) }
+
+    AddSubjectDialog(
+        showDialog = isAddSubjectDialogOpen,
+        onDismissRequest = {
+            isAddSubjectDialogOpen = false
+        },
+        onConfirmation = {
+            isAddSubjectDialogOpen = false
+        },
+        selectedColor = selectedColor,
+        onColorChange = { selectedColor = it },
+        subject = subjectName,
+        goalStudyHours = goalHours,
+        onSubjectNameChange = { subjectName = it },
+        onGoalStudyHoursChange = { goalHours = it },
+    )
+
+    DeleteDialog(
+        showDialog = isDeleteSessionDialogOpen,
+        onConfirmation = {
+            isDeleteSessionDialogOpen = false
+        },
+        onDismissRequest = {
+            isDeleteSessionDialogOpen = false
+        },
+        bodyText = stringResource(R.string.confirm_delete_study_session)
+    )
+
+    DeleteDialog(
+        dialogTitle = "Delete Subject?",
+        showDialog = isDeleteSubjectDialogOpen,
+        onConfirmation = {
+            isDeleteSubjectDialogOpen = false
+        },
+        onDismissRequest = {
+            isDeleteSubjectDialogOpen = false
+        },
+        bodyText = stringResource(R.string.confirm_delete_subject)
+    )
 
     Scaffold(
         topBar = {
             SubjectScreenTopBar(
                 title = "English",
-                onDeleteIconClick = {},
-                onEditIconClick = {},
+                onDeleteIconClick = { isDeleteSubjectDialogOpen = true },
+                onEditIconClick = { isAddSubjectDialogOpen = true },
                 onArrowBackClick = {}
             )
+        },
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = { },
+                icon = { Icon(Icons.Filled.Add, "Add task.") },
+                text = { Text(text = "Add Task") },
+                expanded = isFabExpanded
+            )
+
         }
     )
     { paddingValues ->
         LazyColumn(
+            state = listState,
             modifier = modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
+
             item {
                 ProgressIndicator(progress)
             }
@@ -75,14 +162,38 @@ fun SubjectScreen(modifier: Modifier = Modifier) {
                     goalHours = goalHours,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp, horizontal = 12.dp)
+                        .padding(bottom = 12.dp),
                 )
             }
             item {
-                UpcomingTasksSection(taskList = taskList, onCheckBoxClick = {}, onTaskClick = {})
+                TasksSection(
+                    title = stringResource(R.string.upcoming_tasks_section_title),
+                    taskList = taskList,
+                    onCheckBoxClick = {},
+                    onTaskClick = {},
+                    emptyListText1 = stringResource(R.string.no_tasks),
+                    emptyListText2 = stringResource(R.string.add_tasks)
+                )
             }
             item {
-                
+                TasksSection(
+                    modifier = Modifier.padding(top = 20.dp),
+                    title = stringResource(R.string.completed_tasks_section_title),
+                    taskList = emptyList(),
+                    onCheckBoxClick = {},
+                    onTaskClick = {},
+                    emptyListText1 = stringResource(R.string.no_completed_tasks),
+                    emptyListText2 = stringResource(R.string.click_check_box_task_completion)
+                )
+            }
+            item {
+                StudySessionsSection(
+                    modifier = Modifier.padding(top = 20.dp),
+                    sessionsList = sessionList,
+                    onDeleteIconClick = {
+                        isDeleteSessionDialogOpen = true
+                    }
+                )
             }
 
         }
