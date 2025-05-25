@@ -13,4 +13,5 @@
     <string name="no_study_sessions">You don\'t have any recent study sessions.</string>
     <string name="add_study_sessions">Start a study session to begin recording your progress.</string>
     <string name="delete_study_session">Delete study session</string>
+    <string name="confirm_delete_study_session">Are you sure you want to delete this study session? Your studied hours will be reduced. This action cannot be undone.</string>
 </resources>

@@ -28,12 +28,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.room.Delete
 import com.project.studysmart.R
 import com.project.studysmart.domain.model.Session
 import com.project.studysmart.domain.model.Subject
 import com.project.studysmart.domain.model.Task
 import com.project.studysmart.ui.components.AddSubjectDialog
 import com.project.studysmart.ui.components.CountCard
+import com.project.studysmart.ui.components.DeleteDialog
 import com.project.studysmart.ui.components.EmptyCardsContent
 import com.project.studysmart.ui.components.LongButton
 import com.project.studysmart.ui.components.SectionTitle
@@ -69,6 +71,7 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
     )
 
     var isAddSubjectDialogOpen by rememberSaveable { mutableStateOf(false) }
+    var isDeleteSessionDialogOpen by rememberSaveable { mutableStateOf(false) }
     var subjectName by rememberSaveable { mutableStateOf("") }
     var goalHours by rememberSaveable { mutableStateOf("") }
     var selectedColor by rememberSaveable { mutableStateOf(emptyList<Color>()) }
@@ -87,6 +90,17 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
         goalStudyHours = goalHours,
         onSubjectNameChange = {subjectName = it},
         onGoalStudyHoursChange = {goalHours = it},
+    )
+
+    DeleteDialog(
+        showDialog = isDeleteSessionDialogOpen,
+        onConfirmation = {
+            isDeleteSessionDialogOpen = false
+        },
+        onDismissRequest = {
+            isDeleteSessionDialogOpen = false
+        },
+        bodyText =stringResource(R.string.confirm_delete_study_session)
     )
 
     Scaffold(
@@ -127,7 +141,9 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
                 StudySessionsSection(
                     modifier = Modifier.padding(vertical = 20.dp),
                     sessionsList = sessionList,
-                    onDeleteIconClick = {}
+                    onDeleteIconClick = {
+                        isDeleteSessionDialogOpen = true
+                    }
                 )
             }
         }
