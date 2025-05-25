@@ -1,4 +1,4 @@
-package com.project.studysmart.ui.screens.dashboard
+package com.project.studysmart.ui.dashboard
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,6 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,7 +29,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.room.Delete
 import com.project.studysmart.R
 import com.project.studysmart.domain.model.Session
 import com.project.studysmart.domain.model.Subject
@@ -41,7 +41,7 @@ import com.project.studysmart.ui.components.LongButton
 import com.project.studysmart.ui.components.SectionTitle
 import com.project.studysmart.ui.components.StudySessionsSection
 import com.project.studysmart.ui.components.SubjectCard
-import com.project.studysmart.ui.components.UpcomingTasksSection
+import com.project.studysmart.ui.components.TasksSection
 import com.project.studysmart.ui.theme.StudySmartTheme
 import com.project.studysmart.ui.theme.gradient1
 import com.project.studysmart.ui.theme.gradient5
@@ -85,11 +85,11 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
             isAddSubjectDialogOpen = false
         },
         selectedColor = selectedColor,
-        onColorChange = {selectedColor = it},
+        onColorChange = { selectedColor = it },
         subject = subjectName,
         goalStudyHours = goalHours,
-        onSubjectNameChange = {subjectName = it},
-        onGoalStudyHoursChange = {goalHours = it},
+        onSubjectNameChange = { subjectName = it },
+        onGoalStudyHoursChange = { goalHours = it },
     )
 
     DeleteDialog(
@@ -100,7 +100,7 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
         onDismissRequest = {
             isDeleteSessionDialogOpen = false
         },
-        bodyText =stringResource(R.string.confirm_delete_study_session)
+        bodyText = stringResource(R.string.confirm_delete_study_session)
     )
 
     Scaffold(
@@ -124,8 +124,8 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
             item {
                 SubjectCardsSection(
                     subjectList = subjectList,
-                    onAddIconClick = {isAddSubjectDialogOpen = true}
-                    )
+                    onAddIconClick = { isAddSubjectDialogOpen = true }
+                )
             }
             item {
                 LongButton(
@@ -135,7 +135,14 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
                 )
             }
             item {
-                UpcomingTasksSection(taskList = taskList, onCheckBoxClick = {}, onTaskClick = {})
+                TasksSection(
+                    title = stringResource(R.string.upcoming_tasks_section_title),
+                    taskList = taskList,
+                    onCheckBoxClick = {},
+                    onTaskClick = {},
+                    emptyListText1 = stringResource(R.string.no_tasks),
+                    emptyListText2 = stringResource(R.string.add_tasks)
+                )
             }
             item {
                 StudySessionsSection(
@@ -155,6 +162,10 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
 @Composable
 fun DashboardScreenTopBar() {
     CenterAlignedTopAppBar(
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            titleContentColor = MaterialTheme.colorScheme.primary,
+        ),
         title = {
             Text(
                 text = stringResource(R.string.app_name),
@@ -233,6 +244,14 @@ private fun SubjectCardsSection(
 private fun CountCardsSectionPrev() {
     StudySmartTheme {
         CountCardsSection(3, "10", "12")
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun DashboardScreenPrev() {
+    StudySmartTheme {
+        DashboardScreen()
     }
 }
 

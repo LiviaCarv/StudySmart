@@ -12,7 +12,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,23 +22,26 @@ import com.project.studysmart.ui.theme.StudySmartTheme
 import com.project.studysmart.util.Priority
 
 @Composable
-fun UpcomingTasksSection(
+fun TasksSection(
     modifier: Modifier = Modifier,
     taskList: List<Task>,
     onCheckBoxClick: (task: Task) -> Unit,
-    onTaskClick: (Int?) -> Unit
+    onTaskClick: (Int?) -> Unit,
+    title: String,
+    emptyListText1: String,
+    emptyListText2: String
 ) {
     Column(modifier) {
         SectionTitle(
             Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-            stringResource(R.string.upcoming_tasks_section_title),
+            title,
             null,
             {})
         if (taskList.isEmpty()) {
             EmptyCardsContent(
                 imageRes = R.drawable.img_tasks,
-                emptyListText1 = stringResource(R.string.no_tasks),
-                emptyListText2 = stringResource(R.string.add_tasks)
+                emptyListText1 = emptyListText1,
+                emptyListText2 = emptyListText2
             )
         } else {
             Column(
