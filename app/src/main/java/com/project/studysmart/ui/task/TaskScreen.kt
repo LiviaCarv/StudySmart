@@ -28,6 +28,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,11 +49,18 @@ import com.project.studysmart.ui.components.LongButton
 import com.project.studysmart.ui.components.TaskCheckBox
 import com.project.studysmart.ui.theme.Red
 import com.project.studysmart.ui.theme.StudySmartTheme
+import com.project.studysmart.util.CurrentOrFutureSelectableDates
 import com.project.studysmart.util.Priority
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskScreen(
     modifier: Modifier = Modifier,
@@ -70,15 +78,23 @@ fun TaskScreen(
         else -> null
     }
 
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = System.currentTimeMillis(),
+        selectableDates = CurrentOrFutureSelectableDates
+    )
     var showDatePicker by remember { mutableStateOf(false) }
     var selectedDateMillis by rememberSaveable { mutableStateOf<Long?>(null) }
 
-    val formattedDate = selectedDateMillis?.let {
-        val formatter = remember { SimpleDateFormat("dd MMM yyyy", Locale.getDefault()) }
-        formatter.format(Date(it))
-    } ?: "Select a date"
+    val millis = datePickerState.selectedDateMillis
+    val localDate = millis?.let {
+        Instant.ofEpochMilli(it)
+            .atZone(ZoneOffset.UTC) // sempre UTC
+            .toLocalDate()
+    }
+    val formattedDate = localDate?.format(DateTimeFormatter.ofPattern("dd MMM yyyy")) ?: "Select Date"
 
     DatePicker(
+        datePickerState = datePickerState,
         showDatePicker = showDatePicker,
         onDateSelected = { selectedDateMillis = it },
         onDismiss = { showDatePicker = false },

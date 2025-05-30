@@ -20,11 +20,13 @@ enum class Priority(val title: String, val color: Color, val value: Int) {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-object CurrentOrFutureSelectableDates: SelectableDates {
+object CurrentOrFutureSelectableDates : SelectableDates {
 
     override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-        val currentDateMillis =
-            LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        val currentDateMillis = LocalDate.now()
+            .atStartOfDay(ZoneId.systemDefault())
+            .toInstant()
+            .toEpochMilli()
         return utcTimeMillis >= currentDateMillis
 
     }
