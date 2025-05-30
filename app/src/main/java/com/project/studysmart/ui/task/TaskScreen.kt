@@ -19,7 +19,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,11 +42,16 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.project.studysmart.R
+import com.project.studysmart.ui.components.DatePicker
 import com.project.studysmart.ui.components.DeleteDialog
+import com.project.studysmart.ui.components.LongButton
 import com.project.studysmart.ui.components.TaskCheckBox
 import com.project.studysmart.ui.theme.Red
 import com.project.studysmart.ui.theme.StudySmartTheme
 import com.project.studysmart.util.Priority
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun TaskScreen(
@@ -55,16 +59,30 @@ fun TaskScreen(
 ) {
     var title by rememberSaveable { mutableStateOf("") }
     var description by rememberSaveable { mutableStateOf("") }
+
     var isDeleteTaskDialogOpen by rememberSaveable { mutableStateOf(false) }
 
     var titleError by remember { mutableStateOf<String?>(null) }
-
     titleError = when {
         title.isBlank() -> "Please enter title."
         title.length < 4 -> "Title is too short."
         title.length > 30 -> "Title is too long."
         else -> null
     }
+
+    var showDatePicker by remember { mutableStateOf(false) }
+    var selectedDateMillis by rememberSaveable { mutableStateOf<Long?>(null) }
+
+    val formattedDate = selectedDateMillis?.let {
+        val formatter = remember { SimpleDateFormat("dd MMM yyyy", Locale.getDefault()) }
+        formatter.format(Date(it))
+    } ?: "Select a date"
+
+    DatePicker(
+        showDatePicker = showDatePicker,
+        onDateSelected = { selectedDateMillis = it },
+        onDismiss = { showDatePicker = false },
+    )
 
     DeleteDialog(
         dialogTitle = "Delete Task?",
@@ -126,11 +144,11 @@ fun TaskScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "30 Feb 25",
+                    text = formattedDate,
                     style = MaterialTheme.typography.bodyLarge
                 )
                 IconButton(
-                    onClick = {}
+                    onClick = { showDatePicker = true }
                 ) {
                     Icon(
                         imageVector = Icons.Default.DateRange,
@@ -177,14 +195,10 @@ fun TaskScreen(
                     )
                 }
             }
-
-            Button(
-                modifier = Modifier.fillMaxWidth(),
+            LongButton(
+                text = "Save",
                 onClick = {},
-                enabled = titleError == null
-            ) {
-                Text(text = "Save")
-            }
+            )
         }
 
     }
