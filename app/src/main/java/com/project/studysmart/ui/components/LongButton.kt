@@ -13,11 +13,13 @@ import com.project.studysmart.ui.theme.StudySmartTheme
 fun LongButton(
     modifier: Modifier = Modifier,
     text: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    isEnabled: Boolean = true
 ) {
     Button(
         modifier = modifier.fillMaxWidth(),
         onClick = { onClick() },
+        enabled = isEnabled
     ) {
         Text(
             text = text,

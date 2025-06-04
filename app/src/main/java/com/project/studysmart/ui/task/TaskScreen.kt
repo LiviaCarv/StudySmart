@@ -29,10 +29,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -43,22 +45,22 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.project.studysmart.R
+import com.project.studysmart.domain.model.Subject
 import com.project.studysmart.ui.components.DatePicker
 import com.project.studysmart.ui.components.DeleteDialog
 import com.project.studysmart.ui.components.LongButton
+import com.project.studysmart.ui.components.SubjectListBottomSheet
 import com.project.studysmart.ui.components.TaskCheckBox
 import com.project.studysmart.ui.theme.Red
 import com.project.studysmart.ui.theme.StudySmartTheme
+import com.project.studysmart.ui.theme.gradient1
+import com.project.studysmart.ui.theme.gradient5
 import com.project.studysmart.util.CurrentOrFutureSelectableDates
 import com.project.studysmart.util.Priority
-import java.text.SimpleDateFormat
+import kotlinx.coroutines.launch
 import java.time.Instant
-import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,21 +71,25 @@ fun TaskScreen(
     var description by rememberSaveable { mutableStateOf("") }
 
     var isDeleteTaskDialogOpen by rememberSaveable { mutableStateOf(false) }
+    var showBottomSheet by rememberSaveable { mutableStateOf(false) }
 
     var titleError by remember { mutableStateOf<String?>(null) }
     titleError = when {
         title.isBlank() -> "Please enter title."
-        title.length < 4 -> "Title is too short."
+        title.length < 3 -> "Title is too short."
         title.length > 30 -> "Title is too long."
         else -> null
     }
 
+    val scope = rememberCoroutineScope()
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = System.currentTimeMillis(),
         selectableDates = CurrentOrFutureSelectableDates
     )
+
+    val bottomSheetState = rememberModalBottomSheetState()
     var showDatePicker by remember { mutableStateOf(false) }
-    var selectedDateMillis by rememberSaveable { mutableStateOf<Long?>(null) }
+    var selectedDateMillis by remember { mutableStateOf<Long?>(null) }
 
     val millis = datePickerState.selectedDateMillis
     val localDate = millis?.let {
@@ -91,7 +97,27 @@ fun TaskScreen(
             .atZone(ZoneOffset.UTC) // sempre UTC
             .toLocalDate()
     }
-    val formattedDate = localDate?.format(DateTimeFormatter.ofPattern("dd MMM yyyy")) ?: "Select Date"
+    val formattedDate =
+        localDate?.format(DateTimeFormatter.ofPattern("dd MMM yyyy")) ?: "Select Date"
+
+    SubjectListBottomSheet(
+        sheetState = bottomSheetState,
+        onDismissClick = { showBottomSheet = false },
+        subjectList = listOf(
+            Subject(1, "Math", 3f, gradient1),
+            Subject(2, "Portuguese", 7.0f, gradient5),
+            Subject(3, "Geo", 5.0f, gradient1),
+            Subject(4, "Physics", 3f, gradient1)
+        ),
+        showBottomSheet = showBottomSheet,
+        onSubjectClicked = {
+            scope.launch { bottomSheetState.hide() }.invokeOnCompletion {
+                if (!bottomSheetState.isVisible) {
+                    showBottomSheet = false
+                }
+            }
+        }
+    )
 
     DatePicker(
         datePickerState = datePickerState,
@@ -203,7 +229,7 @@ fun TaskScreen(
                     style = MaterialTheme.typography.bodyLarge
                 )
                 IconButton(
-                    onClick = {}
+                    onClick = {showBottomSheet = true}
                 ) {
                     Icon(
                         imageVector = Icons.Default.ArrowDropDown,
@@ -214,6 +240,7 @@ fun TaskScreen(
             LongButton(
                 text = "Save",
                 onClick = {},
+                isEnabled = title.isNotBlank() && titleError.isNullOrEmpty()
             )
         }
 
