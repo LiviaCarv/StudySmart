@@ -22,20 +22,71 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.project.studysmart.R
+import com.project.studysmart.domain.model.Subject
+import com.project.studysmart.ui.components.DeleteDialog
 import com.project.studysmart.ui.components.RelatedToSubjectSession
 import com.project.studysmart.ui.components.StudySessionsSection
+import com.project.studysmart.ui.components.SubjectListBottomSheet
 import com.project.studysmart.ui.theme.StudySmartTheme
+import com.project.studysmart.ui.theme.gradient1
+import com.project.studysmart.ui.theme.gradient5
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SessionScreen(modifier: Modifier = Modifier) {
+    val bottomSheetState = rememberModalBottomSheetState()
+    var showBottomSheet by rememberSaveable { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    var isDeleteSessionDialogOpen by rememberSaveable { mutableStateOf(false) }
+
+    SubjectListBottomSheet(
+        sheetState = bottomSheetState,
+        onDismissClick = { showBottomSheet = false },
+        subjectList = listOf(
+            Subject(1, "Math", 3f, gradient1),
+            Subject(2, "Portuguese", 7.0f, gradient5),
+            Subject(3, "Geo", 5.0f, gradient1),
+            Subject(4, "Physics", 3f, gradient1)
+        ),
+        showBottomSheet = showBottomSheet,
+        onSubjectClicked = {
+            scope.launch { bottomSheetState.hide() }.invokeOnCompletion {
+                if (!bottomSheetState.isVisible) {
+                    showBottomSheet = false
+                }
+            }
+        }
+    )
+
+    DeleteDialog(
+        showDialog = isDeleteSessionDialogOpen,
+        onConfirmation = {
+            isDeleteSessionDialogOpen = false
+        },
+        onDismissRequest = {
+            isDeleteSessionDialogOpen = false
+        },
+        bodyText = stringResource(R.string.confirm_delete_study_session)
+    )
+
     Scaffold(
         topBar = {
             SessionScreenTopBar(onArrowBackClick = {})
@@ -56,7 +107,7 @@ fun SessionScreen(modifier: Modifier = Modifier) {
                 RelatedToSubjectSession(
                     modifier = Modifier.padding(12.dp),
                     relatedToSubject = "English",
-                    selectSubjectButtonClick = {}
+                    selectSubjectButtonClick = { showBottomSheet = true }
                 )
             }
             item {
@@ -71,7 +122,7 @@ fun SessionScreen(modifier: Modifier = Modifier) {
                 StudySessionsSection(
                     title = "Study sessions history",
                     sessionsList = emptyList(),
-                    onDeleteIconClick = {}
+                    onDeleteIconClick = { isDeleteSessionDialogOpen = true }
                 )
             }
         }

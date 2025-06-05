@@ -7,7 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.project.studysmart.ui.dashboard.DashboardScreen
-import com.project.studysmart.ui.task.TaskScreen
+import com.project.studysmart.ui.session.SessionScreen
 import com.project.studysmart.ui.theme.StudySmartTheme
 
 class MainActivity : ComponentActivity() {
@@ -16,7 +16,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             StudySmartTheme {
-                TaskScreen()
+                SessionScreen()
             }
         }
     }

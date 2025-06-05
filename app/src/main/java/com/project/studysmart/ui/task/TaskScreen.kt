@@ -16,7 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,6 +48,7 @@ import com.project.studysmart.domain.model.Subject
 import com.project.studysmart.ui.components.DatePicker
 import com.project.studysmart.ui.components.DeleteDialog
 import com.project.studysmart.ui.components.LongButton
+import com.project.studysmart.ui.components.RelatedToSubjectSession
 import com.project.studysmart.ui.components.SubjectListBottomSheet
 import com.project.studysmart.ui.components.TaskCheckBox
 import com.project.studysmart.ui.theme.Red
@@ -71,7 +71,6 @@ fun TaskScreen(
     var description by rememberSaveable { mutableStateOf("") }
 
     var isDeleteTaskDialogOpen by rememberSaveable { mutableStateOf(false) }
-    var showBottomSheet by rememberSaveable { mutableStateOf(false) }
 
     var titleError by remember { mutableStateOf<String?>(null) }
     titleError = when {
@@ -88,6 +87,7 @@ fun TaskScreen(
     )
 
     val bottomSheetState = rememberModalBottomSheetState()
+    var showBottomSheet by rememberSaveable { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
     var selectedDateMillis by remember { mutableStateOf<Long?>(null) }
 
@@ -177,7 +177,7 @@ fun TaskScreen(
             )
             Text(
                 text = "Due date",
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.align(Alignment.Start)
             )
             Row(
@@ -203,40 +203,10 @@ fun TaskScreen(
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.align(Alignment.Start)
             )
-            Row(
-                modifier = modifier.fillMaxWidth(),
-            ) {
-                Priority.entries.forEach { priority ->
-                    PriorityButton(
-                        modifier = Modifier.weight(1f),
-                        priority = priority,
-                        onClick = {}
-                    )
-                }
-            }
-            Text(
-                text = "Related to subject",
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.align(Alignment.Start)
+            RelatedToSubjectSession(
+                relatedToSubject = "English",
+                selectSubjectButtonClick = {}
             )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "English",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                IconButton(
-                    onClick = {showBottomSheet = true}
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowDropDown,
-                        contentDescription = "Choose subject"
-                    )
-                }
-            }
             LongButton(
                 text = "Save",
                 onClick = {},
