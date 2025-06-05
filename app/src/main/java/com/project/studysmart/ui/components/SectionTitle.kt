@@ -32,7 +32,7 @@ fun SectionTitle(
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleSmall
         )
        if (icon != null) {
            IconButton(

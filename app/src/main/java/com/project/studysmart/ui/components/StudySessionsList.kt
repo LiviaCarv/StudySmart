@@ -28,12 +28,13 @@ import com.project.studysmart.ui.theme.StudySmartTheme
 fun StudySessionsSection(
     modifier: Modifier = Modifier,
     sessionsList: List<Session>,
-    onDeleteIconClick: (Session) -> Unit
+    onDeleteIconClick: (Session) -> Unit,
+    title: String = "RECENT STUDY SESSIONS"
 ) {
     Column(modifier) {
         SectionTitle(
             Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-            "RECENT STUDY SESSIONS",
+            title,
             null,
             {})
         if (sessionsList.isEmpty()) {
