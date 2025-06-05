@@ -57,15 +57,35 @@ import com.project.studysmart.ui.theme.gradient1
 import com.project.studysmart.ui.theme.gradient5
 import com.project.studysmart.util.CurrentOrFutureSelectableDates
 import com.project.studysmart.util.Priority
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
+
+data class TaskScreenNavArgs(
+    val subjectId: Int?,
+    val taskId: Int?
+)
+
+@Destination(navArgsDelegate = TaskScreenNavArgs::class)
+@Composable
+fun TaskScreenRoute(
+    navigator: DestinationsNavigator
+) {
+    TaskScreen(
+        onBackButtonClick = {
+            navigator.navigateUp()
+        }
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskScreen(
-    modifier: Modifier = Modifier,
+private fun TaskScreen(
+    onBackButtonClick: () -> Unit
 ) {
     var title by rememberSaveable { mutableStateOf("") }
     var description by rememberSaveable { mutableStateOf("") }
@@ -143,7 +163,7 @@ fun TaskScreen(
             TaskScreenTopBar(
                 onDeleteIconClick = { isDeleteTaskDialogOpen = true },
                 onCheckBoxClick = {},
-                onArrowBackClick = {},
+                onArrowBackClick = onBackButtonClick,
                 isTaskExist = true,
                 isComplete = false,
                 checkBoxBorderColor = Red,
@@ -151,7 +171,7 @@ fun TaskScreen(
         }
     ) { paddingValues ->
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(horizontal = 12.dp)
@@ -200,12 +220,23 @@ fun TaskScreen(
             }
             Text(
                 text = "Priority",
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.align(Alignment.Start)
             )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Priority.entries.forEach { priority ->
+                    PriorityButton(
+                        modifier = Modifier.weight(1f),
+                        priority = priority,
+                        onClick = {}
+                    )
+                }
+            }
             RelatedToSubjectSession(
                 relatedToSubject = "English",
-                selectSubjectButtonClick = {}
+                selectSubjectButtonClick = { showBottomSheet = true }
             )
             LongButton(
                 text = "Save",
@@ -291,6 +322,6 @@ fun TaskScreenTopBar(
 @Composable
 private fun TaskScreenPrev() {
     StudySmartTheme {
-        TaskScreen()
+        TaskScreen({})
     }
 }

@@ -46,11 +46,27 @@ import com.project.studysmart.ui.components.SubjectListBottomSheet
 import com.project.studysmart.ui.theme.StudySmartTheme
 import com.project.studysmart.ui.theme.gradient1
 import com.project.studysmart.ui.theme.gradient5
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
+
+@Destination
+@Composable
+fun SessionScreenRoute(
+    navigator: DestinationsNavigator
+) {
+    SessionScreen(
+        onBackButtonClick = {
+            navigator.navigateUp()
+        }
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SessionScreen(modifier: Modifier = Modifier) {
+private fun SessionScreen(
+    onBackButtonClick: () -> Unit
+) {
     val bottomSheetState = rememberModalBottomSheetState()
     var showBottomSheet by rememberSaveable { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -89,12 +105,12 @@ fun SessionScreen(modifier: Modifier = Modifier) {
 
     Scaffold(
         topBar = {
-            SessionScreenTopBar(onArrowBackClick = {})
+            SessionScreenTopBar(onArrowBackClick = onBackButtonClick)
         }
     ) { paddingValues ->
 
         LazyColumn(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
@@ -230,6 +246,6 @@ fun SessionScreenTopBar(
 @Composable
 private fun SessionScreenPrev() {
     StudySmartTheme {
-        SessionScreen()
+        SessionScreen({})
     }
 }

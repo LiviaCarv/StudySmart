@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -49,11 +50,44 @@ import com.project.studysmart.ui.components.CountCard
 import com.project.studysmart.ui.components.DeleteDialog
 import com.project.studysmart.ui.components.StudySessionsSection
 import com.project.studysmart.ui.components.TasksSection
+import com.project.studysmart.ui.destinations.TaskScreenRouteDestination
+import com.project.studysmart.ui.task.TaskScreenNavArgs
 import com.project.studysmart.ui.theme.StudySmartTheme
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlin.math.roundToInt
 
+data class SubjectScreenNavArgs(
+    val subjectId: Int
+)
+
+@Destination(navArgsDelegate = SubjectScreenNavArgs::class)
 @Composable
-fun SubjectScreen(modifier: Modifier = Modifier) {
+fun SubjectScreenRoute(
+    navigator: DestinationsNavigator
+) {
+    SubjectScreen(
+        onAddTaskClick = {
+            // will be implemented with the viewModel
+            val navArg = TaskScreenNavArgs(taskId = null, subjectId = -1)
+            navigator.navigate(TaskScreenRouteDestination(navArg))
+        },
+        onTaskCardClick = { taskId ->
+            val navArg = TaskScreenNavArgs(taskId = taskId, subjectId = null)
+            navigator.navigate(TaskScreenRouteDestination(navArgs = navArg))
+        },
+        onBackButtonClick = {
+            navigator.navigateUp()
+        }
+    )
+}
+
+@Composable
+private fun SubjectScreen(
+    onAddTaskClick: () -> Unit,
+    onTaskCardClick: (Int?) -> Unit,
+    onBackButtonClick: () -> Unit
+) {
     val taskList = listOf(
         Task(1, 2, "Prepare notes", "need to study", 4L, 0, "", true),
         Task(1, 2, "Watch next lesson", "need to study", 4L, 1, "", false),
@@ -66,9 +100,6 @@ fun SubjectScreen(modifier: Modifier = Modifier) {
         Session(sessionSubjectId = 4, relatedToSubject = "Physics", 1234L, 2L, 3),
     )
 
-
-//    val progress = studiedHours.toFloat() / goalHours.toFloat()
-
     val listState = rememberLazyListState()
     val isFabExpanded by remember {
         derivedStateOf { listState.firstVisibleItemIndex == 0 }
@@ -78,7 +109,7 @@ fun SubjectScreen(modifier: Modifier = Modifier) {
     var isDeleteSessionDialogOpen by rememberSaveable { mutableStateOf(false) }
     var isDeleteSubjectDialogOpen by rememberSaveable { mutableStateOf(false) }
     var subjectName by rememberSaveable { mutableStateOf("") }
-    var studiedHours by rememberSaveable { mutableStateOf("4") }
+    val studiedHours by rememberSaveable { mutableStateOf("4") }
     var goalHours by rememberSaveable { mutableStateOf("10") }
     val progress by remember {
         derivedStateOf {
@@ -132,12 +163,12 @@ fun SubjectScreen(modifier: Modifier = Modifier) {
                 title = "English",
                 onDeleteIconClick = { isDeleteSubjectDialogOpen = true },
                 onEditIconClick = { isAddSubjectDialogOpen = true },
-                onArrowBackClick = {}
+                onArrowBackClick = onBackButtonClick
             )
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                onClick = { },
+                onClick = onAddTaskClick,
                 icon = { Icon(Icons.Filled.Add, "Add task.") },
                 text = { Text(text = "Add Task") },
                 expanded = isFabExpanded
@@ -148,7 +179,7 @@ fun SubjectScreen(modifier: Modifier = Modifier) {
     { paddingValues ->
         LazyColumn(
             state = listState,
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
@@ -170,7 +201,7 @@ fun SubjectScreen(modifier: Modifier = Modifier) {
                     title = stringResource(R.string.upcoming_tasks_section_title),
                     taskList = taskList,
                     onCheckBoxClick = {},
-                    onTaskClick = {},
+                    onTaskClick = onTaskCardClick,
                     emptyListText1 = stringResource(R.string.no_tasks),
                     emptyListText2 = stringResource(R.string.add_tasks)
                 )
@@ -281,14 +312,16 @@ private fun ProgressIndicator(progress: Float) {
         Text(text = "Progress \nIndicator", style = MaterialTheme.typography.titleMedium)
         Spacer(modifier = Modifier.width(10.dp))
         Box(
-            modifier = Modifier.height(75.dp),
+            modifier = Modifier
+                .height(100.dp)
+                .aspectRatio(1f),
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator(
                 progress = { 1f },
                 strokeWidth = 4.dp,
                 strokeCap = StrokeCap.Round,
-                color = MaterialTheme.colorScheme.surfaceVariant
+                color = MaterialTheme.colorScheme.surfaceVariant,
             )
             CircularProgressIndicator(
                 progress = { progress },
@@ -305,6 +338,6 @@ private fun ProgressIndicator(progress: Float) {
 @Composable
 private fun SubjectScreenTopBarPrev() {
     StudySmartTheme {
-        SubjectScreen()
+//        SubjectScreen()
     }
 }

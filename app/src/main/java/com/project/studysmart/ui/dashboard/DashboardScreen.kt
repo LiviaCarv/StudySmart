@@ -42,13 +42,45 @@ import com.project.studysmart.ui.components.SectionTitle
 import com.project.studysmart.ui.components.StudySessionsSection
 import com.project.studysmart.ui.components.SubjectCard
 import com.project.studysmart.ui.components.TasksSection
+import com.project.studysmart.ui.destinations.SessionScreenRouteDestination
+import com.project.studysmart.ui.destinations.SubjectScreenRouteDestination
+import com.project.studysmart.ui.destinations.TaskScreenRouteDestination
+import com.project.studysmart.ui.subject.SubjectScreenNavArgs
+import com.project.studysmart.ui.task.TaskScreenNavArgs
 import com.project.studysmart.ui.theme.StudySmartTheme
 import com.project.studysmart.ui.theme.gradient1
 import com.project.studysmart.ui.theme.gradient5
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
+@Destination(start = true)
+@Composable
+fun DashboardScreenRoute(
+    navigator: DestinationsNavigator
+) {
+    DashboardScreen(
+        onSubjectCardClick = { subjectId ->
+            subjectId?.let {
+                val navArg = SubjectScreenNavArgs(subjectId = subjectId)
+                navigator.navigate(SubjectScreenRouteDestination(navArgs = navArg))
+            }
+        },
+        onTaskCardClick = { taskId ->
+            val navArg = TaskScreenNavArgs(taskId = taskId, subjectId = null)
+            navigator.navigate(TaskScreenRouteDestination(navArgs = navArg))
+        },
+        onStartStudySessionClick = {
+            navigator.navigate(SessionScreenRouteDestination)
+        }
+    )
+}
 
 @Composable
-fun DashboardScreen(modifier: Modifier = Modifier) {
+private fun DashboardScreen(
+    onSubjectCardClick: (Int?) -> Unit,
+    onTaskCardClick: (Int?) -> Unit,
+    onStartStudySessionClick: () -> Unit,
+) {
 
     val subjectList = listOf(
         Subject(1, "Math", 3f, gradient1),
@@ -107,7 +139,7 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
         topBar = { DashboardScreenTopBar() }
     ) { paddingValues ->
         LazyColumn(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
@@ -124,14 +156,15 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
             item {
                 SubjectCardsSection(
                     subjectList = subjectList,
-                    onAddIconClick = { isAddSubjectDialogOpen = true }
+                    onAddIconClick = { isAddSubjectDialogOpen = true },
+                    onSubjectCardClick = onSubjectCardClick
                 )
             }
             item {
                 LongButton(
                     text = stringResource(R.string.start_study_session),
-                    onClick = {},
-                    modifier = modifier.padding(vertical = 20.dp, horizontal = 48.dp)
+                    onClick = onStartStudySessionClick,
+                    modifier = Modifier.padding(vertical = 20.dp, horizontal = 48.dp)
                 )
             }
             item {
@@ -139,7 +172,7 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
                     title = stringResource(R.string.upcoming_tasks_section_title),
                     taskList = taskList,
                     onCheckBoxClick = {},
-                    onTaskClick = {},
+                    onTaskClick = onTaskCardClick,
                     emptyListText1 = stringResource(R.string.no_tasks),
                     emptyListText2 = stringResource(R.string.add_tasks)
                 )
@@ -209,14 +242,15 @@ private fun CountCardsSection(
 private fun SubjectCardsSection(
     modifier: Modifier = Modifier,
     subjectList: List<Subject>,
-    onAddIconClick: () -> Unit
+    onAddIconClick: () -> Unit,
+    onSubjectCardClick: (Int?) -> Unit
 ) {
     Column(modifier) {
         SectionTitle(
             Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
             stringResource(R.string.subject_section_title),
             Icons.Default.Add,
-            { onAddIconClick() }
+            onAddIconClick
         )
         if (subjectList.isEmpty()) {
             EmptyCardsContent(
@@ -231,7 +265,9 @@ private fun SubjectCardsSection(
             ) {
                 items(subjectList)
                 { subject ->
-                    SubjectCard(subject = subject, onClick = {})
+                    SubjectCard(
+                        subject = subject,
+                        onClick = { onSubjectCardClick(subject.subjectId) })
                 }
             }
         }
@@ -251,7 +287,7 @@ private fun CountCardsSectionPrev() {
 @Composable
 private fun DashboardScreenPrev() {
     StudySmartTheme {
-        DashboardScreen()
+//        DashboardScreen()
     }
 }
 
