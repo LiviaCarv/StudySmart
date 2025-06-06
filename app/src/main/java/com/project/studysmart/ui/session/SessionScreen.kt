@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.project.studysmart.R
 import com.project.studysmart.domain.model.Subject
+import com.project.studysmart.subjectList
 import com.project.studysmart.ui.components.DeleteDialog
 import com.project.studysmart.ui.components.RelatedToSubjectSession
 import com.project.studysmart.ui.components.StudySessionsSection
@@ -76,12 +77,7 @@ private fun SessionScreen(
     SubjectListBottomSheet(
         sheetState = bottomSheetState,
         onDismissClick = { showBottomSheet = false },
-        subjectList = listOf(
-            Subject(1, "Math", 3f, gradient1),
-            Subject(2, "Portuguese", 7.0f, gradient5),
-            Subject(3, "Geo", 5.0f, gradient1),
-            Subject(4, "Physics", 3f, gradient1)
-        ),
+        subjectList = subjectList,
         showBottomSheet = showBottomSheet,
         onSubjectClicked = {
             scope.launch { bottomSheetState.hide() }.invokeOnCompletion {

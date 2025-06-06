@@ -43,8 +43,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.project.studysmart.R
-import com.project.studysmart.domain.model.Session
-import com.project.studysmart.domain.model.Task
+import com.project.studysmart.sessionList
+import com.project.studysmart.taskList
 import com.project.studysmart.ui.components.AddSubjectDialog
 import com.project.studysmart.ui.components.CountCard
 import com.project.studysmart.ui.components.DeleteDialog
@@ -88,18 +88,6 @@ private fun SubjectScreen(
     onTaskCardClick: (Int?) -> Unit,
     onBackButtonClick: () -> Unit
 ) {
-    val taskList = listOf(
-        Task(1, 2, "Prepare notes", "need to study", 4L, 0, "", true),
-        Task(1, 2, "Watch next lesson", "need to study", 4L, 1, "", false),
-        Task(1, 2, "Study 2 hrs", "need to study", 4L, 2, "", false)
-    )
-    val sessionList = listOf(
-        Session(sessionSubjectId = 1, relatedToSubject = "English", 1234L, 2L, 0),
-        Session(sessionSubjectId = 2, relatedToSubject = "Portuguese", 1234L, 2L, 1),
-        Session(sessionSubjectId = 3, relatedToSubject = "Maths", 1234L, 2L, 2),
-        Session(sessionSubjectId = 4, relatedToSubject = "Physics", 1234L, 2L, 3),
-    )
-
     val listState = rememberLazyListState()
     val isFabExpanded by remember {
         derivedStateOf { listState.firstVisibleItemIndex == 0 }
