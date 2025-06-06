@@ -1,4 +1,4 @@
-package com.project.studysmart.data
+package com.project.studysmart.data.local
 
 import androidx.room.Dao
 import androidx.room.Delete

@@ -1,8 +1,7 @@
-package com.project.studysmart.data
+package com.project.studysmart.data.local
 
 import androidx.room.Dao
 import androidx.room.Delete
-import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Upsert
 import com.project.studysmart.domain.model.Task
@@ -27,6 +26,6 @@ interface TaskDao {
     fun getTasksForSubject(subjectId: Int) : Flow<List<Task>>
 
     @Query("SELECT * FROM TASKS")
-    fun getAllTasks():Flow<List<Task>>
+    fun getAllTasks(): Flow<List<Task>>
 
 }
